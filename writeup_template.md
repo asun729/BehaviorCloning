@@ -66,7 +66,7 @@ The model used an adam optimizer, so the learning rate was not tuned manually.
 
 Training data was chosen to keep the vehicle driving on the road. I used a combination of 
 * center lane driving
-* extreme left turn (after bridge)
+* extreme left turn + entering bridge
 * counter turn (right turn)
 * Sample data from Udacity
 
@@ -76,9 +76,8 @@ For details about how I created the training data, see the next section.
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
 
-My first step was to use a convolution neural network model similar to the nvidia, thought this model might be appropriate because ...
+My first step was to use a convolution neural network model similar to the nvidia, thought this model might be appropriate because it was designed for behavour cloning with small training set. 
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting.
 
@@ -87,12 +86,11 @@ Then I added dropout rate between layers to combat overfitting.
 
 The final step was to run the simulator to see how well the car was driving around track one. 
 
-There were a few spots where the vehicle fell off the track... 
 The first spot that the vehicle fell of the track was after the bridge where it didn't turn enough and went into the sand. 
+The second spot that the vehicle drove off the track was on the bridge, where it hit the wall and the controller couldn't correct itself. 
+The last one happened on the only right turn in track 1. 
 
-
-
-To improve the driving behavior in these cases, I added a few more training data on the extreme turns to teach the model. 
+To improve the driving behavior in these cases, I added a few more training data on the extreme turns, right turns and bridge passing to teach the model. 
 
 
 At the end of the process, the vehicle is able to drive autonomously around the track 1 without leaving the road.
@@ -100,7 +98,7 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+The final model architecture consisted of 6 convolutional layers and 3 fully connected layers.
 
 Here is a visualization of the architecture
 
@@ -123,12 +121,18 @@ a turning angle of ~0.18 are shown as following:
 Since the correction of turning angle was a intuitive guess, few iterations of tuning were done to get a proper value. 0.31 turns out to be a good guess in the current model archetecture.
 
 
-To augment the data set, I flipped the images and reversed the angles. An example is shown below: 
+To augment the data set, I flipped the images and reversed the angles.
 
 To expand the size of training set, I also included the sample data provided by udacity course. This concludes to a 
-data set of 58000. 10% of the data were excluded as validation data. 
-
+data set of 56856. 10% of the data were excluded as validation data. 
+Before training, normalization and 2D cropping were executed to normalize data and speed up training. For cropping process, 60 pixels from top and 25 pixels from the bottom were removed. Only the lane part was left for feature extraction. 
+```sh
+model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160, 320, 3)))
+model.add(Cropping2D(cropping=((60, 25), (0, 0))))
+```
 An adam optimizer was used to choose the learning rate. 
+Epochs of the training was set to 5 due to the droprate of 0.2. 
+
 ### Results
 As shown in video.mp4, the car is able to navigate correctly on test data without leaving the drivable portion of the track surface. The mse error on training and validation sets are shown in the following figure:
 ![alt text][image5]
