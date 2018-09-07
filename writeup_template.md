@@ -98,7 +98,7 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 #### 2. Final Model Architecture
 
-The final model architecture consisted of 6 convolutional layers and 3 fully connected layers.
+The final model architecture consisted of 6 convolutional layers and 3 fully connected layers.The first three convolutional layers used 5x5 kernals and the following three used 3x3 kernals without stride. 
 
 Here is a visualization of the architecture
 
